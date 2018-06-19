@@ -6,6 +6,10 @@ from .forms import BlogPostForm
 def get_posts(request):
     posts = Post.objects.all()
     return render(request, "posts/blogposts.html", {'posts': posts})
+    
+def my_posts(request):
+    posts = Post.objects.filter(author=request.user)
+    return render(request, "posts/blogposts.html", {'posts': posts})
 
 def post_detail(request, pk):
     """
@@ -30,7 +34,9 @@ def create_or_edit_post(request, pk=None):
     if request.method == "POST":
         form = BlogPostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
-            post = form.save()
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
             return redirect('post_detail', post.pk)
     else:
         form = BlogPostForm(instance=post)

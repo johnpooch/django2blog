@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 class Post(models.Model):
@@ -12,6 +13,8 @@ class Post(models.Model):
     views = models.IntegerField(default=0)
     tag = models.CharField(max_length=30, blank=True, null=True)
     image = models.ImageField(upload_to="images", blank=True, null=True)
+    author = models.ForeignKey(User, related_name='posts', null=False, on_delete=models.CASCADE)
+    likes = models.ManyToManyField(User, related_name='liked_posts')
     
     def __str__(self):
         return self.title
